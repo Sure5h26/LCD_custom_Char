@@ -3,10 +3,13 @@
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 byte chr[8];
+int b=0;
+byte store[16][8];
+int s1=0;
 
 void getChar()
 {
-  Serial.println("Enter the pattern of 1s and 0s for an 8x5 pixel display:(ex.01110)");
+  Serial.println("Enter the pattern of 1s and 0s for an 8x5 pixel display:");
   for (int i = 0; i < 8; i++)
   {
     while (!Serial.available())
@@ -17,23 +20,41 @@ void getChar()
     Serial.println(s);
     chr[i] = strtol(s.c_str(), NULL, 2);
   }
-  setup();
+  while(s1<=b)
+  {
+    for(int c=0;c<8;c++)
+    {
+      store[s1][c]=chr[c];
+    }
+    s1++;
+  }
 }
 
 void setup()
 {
   lcd.begin(16, 2);
   Serial.begin(9600);
-  lcd.createChar(0, chr);
 }
 
 void loop()
 {
   getChar();
-  lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Your character:");
-  lcd.setCursor(0, 1);
-  lcd.write(byte(0));
-  delay(1000);
+  for(int i=0;i<(b+1);i++)
+  {
+    lcd.createChar(i, store[i]);
+  }
+  for(int a=0;a<(b+1);a++)
+  {
+    lcd.setCursor(a, 1);
+    lcd.write(byte(a));
+  }
+  delay(100);
+  b++;
+  if(b==15 || s1==15)
+  {
+    b=0;
+    s1=0;
+  }
 }
